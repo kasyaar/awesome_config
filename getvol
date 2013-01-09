@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+pactl list sinks|grep -Pzo 'State: RUNNING[\w\W]*^[\W]*Volume:[.\w]*\N*'|grep -Pzo 'Volume:\W*0:\W*[0-9%]*'|awk -F' ' '{print $3}'

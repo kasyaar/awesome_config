@@ -144,6 +144,42 @@ kbdcfg.widget:buttons(awful.util.table.join(
     awful.button({ }, 1, function () kbdcfg.switch() end)
 ))
 
+volumectl = {}
+
+volumectl.getvol = function () 
+     local fh = io.popen(awful.util.getdir("config") .. "/getvol")
+     local str = ""
+     for i in fh:lines() do
+         str = str .. i
+     end
+     io.close(fh)
+     return str
+end
+volumectl.widget = wibox.widget.textbox({name = "volumewidget"}) 
+volumectl.widget.border_width = 1
+volumectl.widget.border_color = beautiful.fg_normal 
+volumectl.widget:set_text(" Vol: ["..volumectl.getvol().." ] ")
+volumectl.cmd = "pactl"
+volumectl.mute_state = 0
+volumectl.mute = function ()
+ if volumectl.mute_state == 0 then
+     awful.util.spawn(volumectl.cmd .. " set-sink-mute 2 1")
+     volumectl.mute_state = 1
+     volumectl.widget:set_text(" Vol: [MUTE: "..volumectl.getvol().." ] ")
+ else
+     awful.util.spawn(volumectl.cmd .. " set-sink-mute 2 0")
+     volumectl.mute_state = 0
+     volumectl.widget:set_text(" Vol: ["..volumectl.getvol().." ] ")
+ end
+end
+volumectl.inc = function ()
+    awful.util.spawn(volumectl.cmd .. " set-sink-volume 2 -- +5%")
+    volumectl.widget:set_text(" Vol: ["..volumectl.getvol().." ] ")
+end
+volumectl.dec = function ()
+    awful.util.spawn(volumectl.cmd .. " set-sink-volume 2 -- -5%")
+    volumectl.widget:set_text(" Vol: ["..volumectl.getvol().." ] ")
+end
 -- Create a wibox for each screen and add it
 mywibox = {}
 mypromptbox = {}
@@ -222,6 +258,7 @@ for s = 1, screen.count() do
     local right_layout = wibox.layout.fixed.horizontal()
     if s == 1 then right_layout:add(wibox.widget.systray()) end
     right_layout:add(kbdcfg.widget)
+    right_layout:add(volumectl.widget)
     right_layout:add(mytextclock)
     right_layout:add(mylayoutbox[s])
 
@@ -244,7 +281,13 @@ root.buttons(awful.util.table.join(
 -- }}}
 
 -- {{{ Key bindings
+
+
 globalkeys = awful.util.table.join(
+    awful.key({ }, "XF86AudioMute", function()  volumectl.mute() end),
+    awful.key({ }, "XF86AudioRaiseVolume", function()  volumectl.inc() end),
+    awful.key({ }, "XF86AudioLowerVolume", function()  volumectl.dec() end),
+
     awful.key({ "Mod1", "Control" }, "l", function () lock_binding()  end),
     awful.key({"Mod1"}, "space", function () kbdcfg.switch() end),
     awful.key({ modkey,           }, "Left",   awful.tag.viewprev       ),
