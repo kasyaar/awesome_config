@@ -42,7 +42,7 @@ end
 beautiful.init("/usr/share/awesome/themes/default/theme.lua")
 
 -- This is used later as the default terminal and editor to run.
-terminal = "xterm"
+terminal = "gnome-terminal"
 editor = os.getenv("EDITOR") or "nano"
 editor_cmd = terminal .. " -e " .. editor
 
@@ -85,7 +85,7 @@ tags = {}
 for s = 1, screen.count() do
     -- Each screen has its own tag table.
     if s == 2 then
-        tags[s] = awful.tag({"msg", "mail"}, s, {layouts[3], layouts[11]})
+        tags[s] = awful.tag({"msg", "mail"}, s, {layouts[3], layouts[10]})
     end
     if s == 1 then
         tags[s] = awful.tag({ "web", "dev"}, s, layouts[5])
