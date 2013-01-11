@@ -452,9 +452,3 @@ end)
 client.connect_signal("focus", function(c) c.border_color = beautiful.border_focus end)
 client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
 -- }}}
-
--- awful.util.spawn_with_shell("skype --dbpath=~/.Skype.strikead.dmitry.kasimtsev")
--- awful.util.spawn_with_shell("skype --dbpath=~/.Skype.kasyaar")
--- awful.util.spawn_with_shell("xscreensaver -nosplash")
-awful.util.spawn_with_shell("firefox")
-awful.util.spawn_with_shell("konsole")
