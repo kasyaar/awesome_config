@@ -99,6 +99,7 @@ myawesomemenu = {
    { "manual", terminal .. " -e man awesome" },
    { "edit config", editor_cmd .. " " .. awesome.conffile },
    { "restart", awesome.restart },
+   {"Log out", awful.util.getdir("config") .. "/shutdown"},
    { "quit", awesome.quit }
 }
 
@@ -144,10 +145,8 @@ kbdcfg.widget:buttons(awful.util.table.join(
     awful.button({ }, 1, function () kbdcfg.switch() end)
 ))
 
-volumectl = {}
-
-volumectl.getvol = function () 
-     local fh = io.popen(awful.util.getdir("config") .. "/getvol")
+local getCMDOut = function(command)
+     local fh = io.popen(command)
      local str = ""
      for i in fh:lines() do
          str = str .. i
@@ -155,6 +154,19 @@ volumectl.getvol = function ()
      io.close(fh)
      return str
 end
+
+volumectl = {}
+
+volumectl.getvol = function () 
+    return getCMDOut(awful.util.getdir("config") .. "/getvol")
+end
+volumectl.getactivesink = awful.util.getdir("config") .. "/getactivesink"
+function debug_awesome(message)
+    naughty.notify({ preset = naughty.config.presets.critical,
+    title = message,
+    text = err })
+end
+
 volumectl.widget = wibox.widget.textbox({name = "volumewidget"}) 
 volumectl.widget.border_width = 1
 volumectl.widget.border_color = beautiful.fg_normal 
@@ -162,22 +174,25 @@ volumectl.widget:set_text(" Vol: ["..volumectl.getvol().." ] ")
 volumectl.cmd = "pactl"
 volumectl.mute_state = 0
 volumectl.mute = function ()
- if volumectl.mute_state == 0 then
-     awful.util.spawn(volumectl.cmd .. " set-sink-mute 2 1")
-     volumectl.mute_state = 1
-     volumectl.widget:set_text(" Vol: [MUTE: "..volumectl.getvol().." ] ")
- else
-     awful.util.spawn(volumectl.cmd .. " set-sink-mute 2 0")
-     volumectl.mute_state = 0
-     volumectl.widget:set_text(" Vol: ["..volumectl.getvol().." ] ")
- end
+    local activesink = getCMDOut(volumectl.getactivesink) 
+    if volumectl.mute_state == 0 then
+        awful.util.spawn(volumectl.cmd .. " set-sink-mute " .. activesink .. " 1")
+        volumectl.mute_state = 1
+        volumectl.widget:set_text(" Vol: [MUTE: "..volumectl.getvol().." ] ")
+    else
+        awful.util.spawn(volumectl.cmd .. " set-sink-mute " .. activesink .. "  0")
+        volumectl.mute_state = 0
+        volumectl.widget:set_text(" Vol: ["..volumectl.getvol().." ] ")
+    end
 end
 volumectl.inc = function ()
-    awful.util.spawn(volumectl.cmd .. " set-sink-volume 2 -- +5%")
+    local activesink = getCMDOut(volumectl.getactivesink) 
+    awful.util.spawn(volumectl.cmd .. " set-sink-volume " .. activesink .. "   -- +5%")
     volumectl.widget:set_text(" Vol: ["..volumectl.getvol().." ] ")
 end
 volumectl.dec = function ()
-    awful.util.spawn(volumectl.cmd .. " set-sink-volume 2 -- -5%")
+    local activesink = getCMDOut(volumectl.getactivesink) 
+    awful.util.spawn(volumectl.cmd .. " set-sink-volume " .. activesink .. " -- -5%")
     volumectl.widget:set_text(" Vol: ["..volumectl.getvol().." ] ")
 end
 -- Create a wibox for each screen and add it

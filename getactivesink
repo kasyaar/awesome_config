@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+pactl list sinks|grep -Pzo 'Sink #[0-9]*\W*State: RUNNING'|grep 'Sink #'|awk -F'#' '{print $2}'
