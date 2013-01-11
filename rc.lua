@@ -119,82 +119,15 @@ menubar.utils.terminal = terminal -- Set the terminal for applications that requ
 -- Create a textclock widget
 mytextclock = awful.widget.textclock()
 
-
--- Keyboard config
-kbdcfg = {}
-kbdcfg.cmd = "setxkbmap"
-kbdcfg.layout = { "us", "ru" }
-kbdcfg.current = 1  -- us is our default layout
-kbdcfg.widget = wibox.widget.textbox({name = "kbdwidget"}) 
-kbdcfg.widget.border_width = 1
-kbdcfg.widget.border_color = beautiful.fg_normal 
-kbdcfg.widget:set_text(" " .. kbdcfg.layout[kbdcfg.current] .. " ")
-kbdcfg.switch = function ()
-    kbdcfg.current = kbdcfg.current % #(kbdcfg.layout) + 1
-    local t = " " .. kbdcfg.layout[kbdcfg.current] .. " "
-    kbdcfg.widget:set_text(t)
-    os.execute( kbdcfg.cmd .. t )
-end
+require("volumectl")
+require("kbdctl")
 
 lock_binding = function ()
-    os.execute( kbdcfg.cmd .. " us" )
+    os.execute( kbdctl.cmd .. " us" )
     awful.util.spawn("i3lock -c 000000 -d")
 end
--- Mouse bindings
-kbdcfg.widget:buttons(awful.util.table.join(
-    awful.button({ }, 1, function () kbdcfg.switch() end)
-))
 
-local getCMDOut = function(command)
-     local fh = io.popen(command)
-     local str = ""
-     for i in fh:lines() do
-         str = str .. i
-     end
-     io.close(fh)
-     return str
-end
 
-volumectl = {}
-
-volumectl.getvol = function () 
-    return getCMDOut(awful.util.getdir("config") .. "/getvol")
-end
-volumectl.getactivesink = awful.util.getdir("config") .. "/getactivesink"
-function debug_awesome(message)
-    naughty.notify({ preset = naughty.config.presets.critical,
-    title = message,
-    text = err })
-end
-
-volumectl.widget = wibox.widget.textbox({name = "volumewidget"}) 
-volumectl.widget.border_width = 1
-volumectl.widget.border_color = beautiful.fg_normal 
-volumectl.widget:set_text(" Vol: ["..volumectl.getvol().." ] ")
-volumectl.cmd = "pactl"
-volumectl.mute_state = 0
-volumectl.mute = function ()
-    local activesink = getCMDOut(volumectl.getactivesink) 
-    if volumectl.mute_state == 0 then
-        awful.util.spawn(volumectl.cmd .. " set-sink-mute " .. activesink .. " 1")
-        volumectl.mute_state = 1
-        volumectl.widget:set_text(" Vol: [MUTE: "..volumectl.getvol().." ] ")
-    else
-        awful.util.spawn(volumectl.cmd .. " set-sink-mute " .. activesink .. "  0")
-        volumectl.mute_state = 0
-        volumectl.widget:set_text(" Vol: ["..volumectl.getvol().." ] ")
-    end
-end
-volumectl.inc = function ()
-    local activesink = getCMDOut(volumectl.getactivesink) 
-    awful.util.spawn(volumectl.cmd .. " set-sink-volume " .. activesink .. "   -- +5%")
-    volumectl.widget:set_text(" Vol: ["..volumectl.getvol().." ] ")
-end
-volumectl.dec = function ()
-    local activesink = getCMDOut(volumectl.getactivesink) 
-    awful.util.spawn(volumectl.cmd .. " set-sink-volume " .. activesink .. " -- -5%")
-    volumectl.widget:set_text(" Vol: ["..volumectl.getvol().." ] ")
-end
 -- Create a wibox for each screen and add it
 mywibox = {}
 mypromptbox = {}
@@ -272,7 +205,7 @@ for s = 1, screen.count() do
     -- Widgets that are aligned to the right
     local right_layout = wibox.layout.fixed.horizontal()
     if s == 1 then right_layout:add(wibox.widget.systray()) end
-    right_layout:add(kbdcfg.widget)
+    right_layout:add(kbdctl.widget)
     right_layout:add(volumectl.widget)
     right_layout:add(mytextclock)
     right_layout:add(mylayoutbox[s])
@@ -304,7 +237,7 @@ globalkeys = awful.util.table.join(
     awful.key({ }, "XF86AudioLowerVolume", function()  volumectl.dec() end),
 
     awful.key({ "Mod1", "Control" }, "l", function () lock_binding()  end),
-    awful.key({"Mod1"}, "space", function () kbdcfg.switch() end),
+    awful.key({"Mod1"}, "space", function () kbdctl.switch() end),
     awful.key({ modkey,           }, "Left",   awful.tag.viewprev       ),
     awful.key({ modkey,           }, "Right",  awful.tag.viewnext       ),
     awful.key({ modkey,           }, "Escape", awful.tag.history.restore),
