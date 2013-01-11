@@ -85,10 +85,10 @@ tags = {}
 for s = 1, screen.count() do
     -- Each screen has its own tag table.
     if s == 2 then
-        tags[s] = awful.tag({"msg", "mail"}, s, {layouts[3], layouts[10]})
+        tags[s] = awful.tag({"msg", "mail", "3"}, s, {layouts[3], layouts[10], layouts[3]})
     end
     if s == 1 then
-        tags[s] = awful.tag({ "web", "dev"}, s, layouts[5])
+        tags[s] = awful.tag({ "web", "dev", "3"}, s, layouts[5])
     end
 end
 -- }}}
