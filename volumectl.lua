@@ -2,6 +2,7 @@ local cli = require("cli")
 local awful = require("awful")
 local wibox = require("wibox")
 local beautiful = require("beautiful")
+local naughty = require("naughty")
 module("volumectl")
 
 -- volumectl = {}
@@ -33,13 +34,20 @@ mute = function ()
         widget:set_text(" Vol: ["..getvol().." ] ")
     end
 end
+local update_widget = function ()
+    local volume = getvol()
+    widget:set_text(" Vol: ["..volume.." ] ")
+    naughty.notify({ preset = naughty.config.presets.low,
+                     title = "Volume changed",
+                     text = volume })
+end
 inc = function ()
     local activesink = cli.run(getactivesink) 
     awful.util.spawn(cmd .. " set-sink-volume " .. activesink .. "   -- +5%")
-    widget:set_text(" Vol: ["..getvol().." ] ")
+    update_widget()
 end
 dec = function ()
     local activesink = cli.run(getactivesink) 
     awful.util.spawn(cmd .. " set-sink-volume " .. activesink .. " -- -5%")
-    widget:set_text(" Vol: ["..getvol().." ] ")
+    update_widget()
 end
