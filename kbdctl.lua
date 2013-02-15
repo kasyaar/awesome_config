@@ -7,7 +7,7 @@ module("kbdctl")
 cmd = "setxkbmap"
 local layout = { "us", "ru" }
 local current = 1  -- us is our default layout
-widget = wibox.widget.textbox({name = "kbdwidget"}) 
+widget = wibox.widget.textbox("kbdwidget") 
 widget.border_width = 1
 widget.border_color = beautiful.fg_normal 
 widget:set_text(" " .. layout[current] .. " ")

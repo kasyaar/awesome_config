@@ -16,7 +16,7 @@ local getactivesink = awful.util.getdir("config") .. "/getactivesink"
     text = err })
 end ]]
 
-widget = wibox.widget.textbox({name = "volumewidget"}) 
+widget = wibox.widget.textbox("volumewidget") 
 widget.border_width = 1
 widget.border_color = beautiful.fg_normal 
 widget:set_text(" Vol: ["..getvol().." ] ")
