@@ -5,7 +5,7 @@ local os = require("os")
 module("kbdctl")
 -- Keyboard config
 cmd = "setxkbmap"
-local layout = { "us", "ru" }
+local layout = { "us", "ua" }
 local current = 1  -- us is our default layout
 widget = wibox.widget.textbox("kbdwidget") 
 widget.border_width = 1
