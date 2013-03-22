@@ -85,10 +85,10 @@ tags = {}
 for s = 1, screen.count() do
     -- Each screen has its own tag table.
     if s == 2 then
-        tags[s] = awful.tag({"msg", "mail", "3"}, s, {layouts[3], layouts[10], layouts[3]})
+        tags[s] = awful.tag({"pomodoro","msg", "mail", "home msg"}, s, {layouts[10], layouts[3], layouts[10], layouts[3]})
     end
     if s == 1 then
-        tags[s] = awful.tag({ "web", "dev", "3"}, s, layouts[5])
+        tags[s] = awful.tag({ "web", "dev", "misc"}, s, layouts[5])
     end
 end
 -- }}}
@@ -121,6 +121,7 @@ mytextclock = awful.widget.textclock()
 
 require("volumectl")
 require("kbdctl")
+require("util")
 
 lock_binding = function ()
     os.execute( kbdctl.cmd .. " us" )
@@ -451,4 +452,7 @@ end)
 
 client.connect_signal("focus", function(c) c.border_color = beautiful.border_focus end)
 client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
+util.run_once("nm-applet --sm-disable")
+util.run_once("deadbeef")
+util.run_once("skype", " --dbpath=~/.Skype.strikead.dmitry.kasimtsev")
 -- }}}
