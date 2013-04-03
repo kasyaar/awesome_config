@@ -88,7 +88,7 @@ for s = 1, screen.count() do
         tags[s] = awful.tag({"pomodoro","msg", "mail", "home msg"}, s, {layouts[10], layouts[3], layouts[10], layouts[3]})
     end
     if s == 1 then
-        tags[s] = awful.tag({ "web", "dev", "misc"}, s, layouts[5])
+        tags[s] = awful.tag({ "web", "dev", "misc", "sys"}, s, layouts[5])
     end
 end
 -- }}}
@@ -104,6 +104,7 @@ myawesomemenu = {
 }
 
 mymainmenu = awful.menu({ items = { { "awesome", myawesomemenu, beautiful.awesome_icon },
+                                    { "pomodoro","/home/kasyaar/bin/pom" },
                                     { "open terminal", terminal }
                                   }
                         })
@@ -122,6 +123,7 @@ mytextclock = awful.widget.textclock()
 require("volumectl")
 require("kbdctl")
 require("util")
+
 
 lock_binding = function ()
     os.execute( kbdctl.cmd .. " us" )
@@ -453,6 +455,7 @@ end)
 client.connect_signal("focus", function(c) c.border_color = beautiful.border_focus end)
 client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
 util.run_once("nm-applet --sm-disable")
-util.run_once("deadbeef")
 util.run_once("skype", " --dbpath=~/.Skype.strikead.dmitry.kasimtsev")
+util.run_once("skype", " --dbpath=~/.Skype.kasyaar")
+util.run_once("conky")
 -- }}}
